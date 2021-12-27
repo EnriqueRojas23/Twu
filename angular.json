@@ -24,13 +24,22 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "assets": [
-              "src/favicon.ico",
+              "src/logo-TWH.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "node_modules/angular-calendar/css/angular-calendar.css",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "src/styles.scss",
+              "src/assets/css/primeflex.min.css",
+              "node_modules/primeng/resources/themes/nova-light/theme.css",
+              "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/ngx-toastr/toastr.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/chart.js/dist/Chart.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -52,7 +61,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumError": "10mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -92,6 +101,8 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/angular-calendar/css/angular-calendar.css",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -123,6 +134,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "twh-spa"
+    }
+  },
+  "defaultProject": "twh-spa",
+  "cli": {
+    "analytics": "97c7b7fb-d8e4-494e-a453-cede88890a5a"
+  }
 }
