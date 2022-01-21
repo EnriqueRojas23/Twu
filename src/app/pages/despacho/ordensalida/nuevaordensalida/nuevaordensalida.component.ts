@@ -8,6 +8,7 @@ import { GeneralService } from 'src/app/_services/Mantenimiento/general.service'
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { AppDateAdapter, APP_DATE_FORMATS } from 'src/app/_common/datepicker.extend';
 import { ToastrService } from 'ngx-toastr';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-nuevaordensalida',
@@ -37,6 +38,9 @@ export class NuevaordensalidaComponent implements OnInit {
 
   dateInicio: Date = new Date(Date.now()) ;
 
+  jwtHelper = new JwtHelperService();
+  decodedToken: any = {};
+
 
   IdNuevaOrden = 0;
 
@@ -56,6 +60,10 @@ settings = {
     ) { }
 
   ngOnInit() {
+
+
+    const user  = localStorage.getItem('token');
+    this.decodedToken = this.jwtHelper.decodeToken(user);
 
     this.es = {
       firstDayOfWeek: 1,
@@ -165,7 +173,8 @@ public uploadFile  = (files) => {
       //  this.router.navigate(['seguimiento/listaorden']);
   }, error => {
     this.div_visible = false;
-    this.alertify.warning(error.error.text
+
+    this.alertify.warning("No existe el dato: " + error.error.text
     , 'Subir File', {
       closeButton: true
     });
@@ -213,6 +222,9 @@ public uploadFile  = (files) => {
 
     this.model.Propietario = this.propietarios.filter(x => x.value === this.model.PropietarioId)[0].label;
     this.model.TipoRegistroId = 170;
+
+    this.model.usuarioid = this.decodedToken.nameid;
+
 
     if (form.invalid) {
          return;

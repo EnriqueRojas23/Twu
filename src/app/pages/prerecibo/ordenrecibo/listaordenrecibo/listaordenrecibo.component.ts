@@ -19,14 +19,14 @@ import * as moment from 'moment';
 export class ListaordenreciboComponent implements OnInit  {
   cols: any[];
 
-  dateInicio: Date = new Date(Date.now()) ;
+  dateInicio: Date = new Date(Date.now() ) ;
   dateFin: Date = new Date(Date.now()) ;
   es: any;
   public loading = false;
   ordenes: OrdenRecibo[] = [];
   model: any;
   EstadoId: number;
-  selectedRow: OrdenRecibo[] = [];
+  selectedRow: OrdenRecibo;
 
   clientes: SelectItem[] = [];
   selectedCar2 = 'NESTLE S.A.';
@@ -42,6 +42,7 @@ export class ListaordenreciboComponent implements OnInit  {
     {val: 31, viewValue: 'Hace un mes '},
   ];
   estados: SelectItem[] = [
+      {value: undefined, label: 'Todos'},
       {value: 4, label: 'Planificado'},
       {value: 5, label: 'Asignado'},
       {value: 6, label: 'Recibiendo'},
@@ -51,6 +52,8 @@ export class ListaordenreciboComponent implements OnInit  {
 
   ];
   almacenes: SelectItem[] = [];
+
+
 
   constructor(private ordenreciboService: OrdenReciboService,
               private router: Router,
@@ -75,20 +78,8 @@ export class ListaordenreciboComponent implements OnInit  {
     this.model = {};
 
 
-    if (localStorage.getItem('dateInicio') === undefined || localStorage.getItem('dateInicio') === null) {
-      this.dateInicio.setDate((new Date()).getDate() - 5);
-   }
-   else {
-    this.dateInicio =  new Date(localStorage.getItem('dateInicio'));
-   }
-
-    if (localStorage.getItem('dateFin') === undefined || localStorage.getItem('dateFin') === null  ) {
+    this.dateInicio.setDate((new Date()).getDate() - 5);
     this.dateFin.setDate((new Date()).getDate() );
-  }
- else {
-  this.dateFin =  new Date(localStorage.getItem('dateFin'));
- }
-
 
     this.model.fec_ini =  this.dateInicio;
     this.model.fec_fin =  this.dateFin ;
@@ -113,49 +104,39 @@ export class ListaordenreciboComponent implements OnInit  {
     [
         {header: 'ACCIONES', field: 'numOrden' , width: '100px' },
         {header: 'ORDEN', field: 'numOrden'  ,  width: '80px' },
+        {header: 'ALMACÉN', field: 'almacen'  ,  width: '120px' },
         {header: 'PROPIETARIO', field: 'propietario'  , width: '140px'   },
         {header: 'ESTADO', field: 'nombreEstado'  ,  width: '100px'  },
         {header: 'GR', field: 'guiaRemision' , width: '100px'  },
         {header: 'EQ TRANSP', field: 'equipotransporte'  , width: '140px'  },
         {header: 'F. ESPERADA', field: 'fechaEsperada'  , width: '130px'  },
+        {header: 'USUARIO REGISTRO', field: 'fechaEsperada'  , width: '130px'  },
         {header: 'F. REGISTRO', field: 'fechaRegistro', width: '120px'    },
 
       ];
 
 
-    this.model.EstadoId = 4;
+
     this.generealService.getAllAlmacenes().subscribe(resp => {
+             this.almacenes.push({ label: "Todos" , value: undefined });
             resp.forEach(element => {
               this.almacenes.push({ value: element.id ,  label : element.descripcion});
             });
 
             this.clienteService.getAllPropietarios('').subscribe(resp1 => {
+              this.clientes.push({ label: "Todos" , value: undefined });
             resp1.forEach(element => {
               this.clientes.push({ label: element.razonSocial.toUpperCase() , value: element.id });
             });
 
-            if (localStorage.getItem('PropietarioId') === 'undefined' || localStorage.getItem('PropietarioId') == null ) {
-              this.model.PropietarioId = 1;
-          }
-          else {
-            this.model.PropietarioId =  parseInt(localStorage.getItem('PropietarioId'), 10);
-          }
-            if (localStorage.getItem('Estado') == null || localStorage.getItem('Estado') === 'undefined') {
-              this.model.EstadoId = 4;
-          }
-          else {
-              this.model.EstadoId = parseInt(localStorage.getItem('Estado') , 10);
-          }
-            if (localStorage.getItem('AlmacenId') == null || localStorage.getItem('AlmacenId') === 'undefined') {
-            this.model.AlmacenId = 1;
-          }
-          else {
-              this.model.AlmacenId = parseInt(localStorage.getItem('AlmacenId'), 10);
-          }
-            this.ordenreciboService.getAll(this.model).subscribe(list => {
-                  this.ordenes = list;
 
-          });
+
+
+
+      }, error=> {
+
+      }  , () => {
+          this.buscar();
       });
 
     });
@@ -187,11 +168,20 @@ export class ListaordenreciboComponent implements OnInit  {
    }
 
    equipotransporte(){
+
+
     this.data.storage = this.selectedRow;
 
-    if (this.data.storage.length > 0) {
+
+
+
+    if(this.selectedRow.estadoID === 4){
       this.router.navigate(['/recibo/vincularequipotransporte', ''] );
     }
+    else {
+      this.alertify.error('La orden ya fue asignada');
+    }
+
 
    }
    openDoor(id) {
@@ -200,15 +190,9 @@ export class ListaordenreciboComponent implements OnInit  {
    buscar(){
     this.loading = true;
 
-    this.selectedRow = [];
 
-    localStorage.setItem('AlmacenId', this.model.AlmacenId);
-    localStorage.setItem('PropietarioId', this.model.PropietarioId);
 
-    localStorage.setItem('dateInicio', this.dateInicio.toDateString());
-    localStorage.setItem('dateFin', this.dateFin.toDateString());
 
-    localStorage.setItem('Estado', this.model.EstadoId);
 
     this.model.fec_ini =  this.dateInicio;
     this.model.fec_fin =  this.dateFin ;

@@ -9,6 +9,7 @@ import { SelectItem } from 'primeng/api/selectitem';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { AppDateAdapter, APP_DATE_FORMATS } from 'src/app/_common/datepicker.extend';
 import { ToastrService } from 'ngx-toastr';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-nuevaordenrecibo',
@@ -38,6 +39,9 @@ export class NuevaordenreciboComponent implements OnInit  {
   div_visible = false;
   uploadedFilePath: string = null;
   fileData: File = null;
+
+  jwtHelper = new JwtHelperService();
+  decodedToken: any = {};
 
 
   date: Date = new Date();
@@ -79,23 +83,15 @@ export class NuevaordenreciboComponent implements OnInit  {
           }, error => {
           }, () => {
 
-            if (localStorage.getItem('PropietarioId') === 'undefined' || localStorage.getItem('PropietarioId') == null ) {
-              this.model.PropietarioId = 1;
-          }
-          else {
-            this.model.PropietarioId =  parseInt(localStorage.getItem('PropietarioId'), 10);
-          }
 
-            if (localStorage.getItem('AlmacenId') == null || localStorage.getItem('AlmacenId') === 'undefined') {
-            this.model.AlmacenId = 1;
-          }
-          else {
-              this.model.AlmacenId = parseInt(localStorage.getItem('AlmacenId') , 10);
-          }
 
         });
 
       });
+
+      const user  = localStorage.getItem('token');
+      this.decodedToken = this.jwtHelper.decodeToken(user);
+
 
 
 
@@ -155,15 +151,20 @@ public uploadFile  = (files) => {
 
 
     this.loading =  true;
+    this.model.usuarioid = this.decodedToken.nameid;
 
     if (form.invalid) {
       return;
     }
+
     this.model.Propietario = this.clientes.filter(x => x.value === this.model.PropietarioId)[0].label;
     this.ordenReciboService.registrar(this.model).subscribe(resp => {
           this.model = resp;
         }, error => {
-          this.alertify.error(error);
+
+          if(error.error == 'Ya existe.'){
+          this.alertify.error("La guía de remisión que intenta ingresar ya existe.");
+          }
           console.log(error);
           console.log('estoy dentro del error');
           this.loading =  false;

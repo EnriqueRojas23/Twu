@@ -12,7 +12,8 @@ import { CalendarEventModel } from 'src/app/_models/Recepcion/CalendarModel';
 const httpOptions = {
   headers: new HttpHeaders({
     Authorization : 'Bearer ' + localStorage.getItem('token'),
-    'Content-Type' : 'application/json'
+    'Content-Type' : 'application/json ; charset=utf-8',
+
   }),
 };
 
@@ -31,6 +32,13 @@ export class OrdenReciboService {
 constructor(private http: HttpClient) { }
 
 getAll(model: any): Observable<OrdenRecibo[]> {
+
+  if(model.PropietarioId === undefined)
+     model.PropietarioId = '';
+     if(model.EstadoId === undefined)
+     model.EstadoId = '';
+     if(model.AlmacenId === undefined)
+     model.AlmacenId = '';
 
   const params = '?PropietarioID=' + model.PropietarioId +
   '&EstadoId=' + model.EstadoId +

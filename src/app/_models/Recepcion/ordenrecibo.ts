@@ -11,7 +11,7 @@ export interface OrdenRecibo {
      fechaEsperada	:  Date ;
      horaEsperada: string;
      fechaRegistro	:  Date ;
-     EstadoID:  number ;
+     estadoID:  number ;
      equipotransporte: string;
      nombreEstado: string ;
      ubicacion: string;

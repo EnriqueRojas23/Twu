@@ -57,6 +57,8 @@ export class VerordenreciboComponent implements OnInit {
     this.ordenServicio.obtenerOrden(this.id).subscribe(resp => {
       this.model = resp;
 
+      console.log(resp);
+
 
       this.listData = new MatTableDataSource(this.model.detalles);
       this.listData.paginator = this.paginator;

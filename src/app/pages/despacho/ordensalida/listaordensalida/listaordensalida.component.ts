@@ -72,6 +72,7 @@ export class ListaordensalidaComponent implements OnInit {
     {value: 31, label: 'Hace un mes '},
   ];
   estados: SelectItem[] = [
+    {value: undefined, label: 'Todos'},
       {value: 21, label: 'Creado'},
       {value: 22, label: 'Planificado'},
       {value: 23, label: 'Asignado'},
@@ -119,32 +120,38 @@ export class ListaordensalidaComponent implements OnInit {
 
 
     this.clienteService.getAllPropietarios('').subscribe(resp => {
+
+      this.clientes.push({ value: undefined , label: "Todos" });
+
       resp.forEach(element => {
         this.clientes.push({ value: element.id , label: element.razonSocial.toUpperCase()});
       });
+
       this.generealService.getAllAlmacenes().subscribe(resp2 => {
+
+        this.almacenes.push({ value: undefined,  label : "Todos"});
         resp2.forEach(element => {
           this.almacenes.push({ value: element.id ,  label : element.descripcion});
         });
-        if (localStorage.getItem('PropietarioId') === 'undefined' || localStorage.getItem('PropietarioId') == null ) {
-          this.model.PropietarioId = 1;
-        }
-        else {
-          this.model.PropietarioId =  parseInt(localStorage.getItem('PropietarioId'), 10);
-        }
+        // if (localStorage.getItem('PropietarioId') === 'undefined' || localStorage.getItem('PropietarioId') == null ) {
+        //   this.model.PropietarioId = 1;
+        // }
+        // else {
+        //   this.model.PropietarioId =  parseInt(localStorage.getItem('PropietarioId'), 10);
+        // }
 
-        if (localStorage.getItem('Estado') == null || localStorage.getItem('Estado') === 'undefined') {
-           this.model.EstadoId = 131;
-        }
-        else {
-            this.model.EstadoId = parseInt(localStorage.getItem('Estado'), 10);
-        }
-        if (localStorage.getItem('AlmacenId') == null || localStorage.getItem('AlmacenId') === 'undefined') {
-          this.model.AlmacenId = 1;
-        }
-        else {
-            this.model.AlmacenId = parseInt(localStorage.getItem('AlmacenId'), 10);
-        }
+        // if (localStorage.getItem('Estado') == null || localStorage.getItem('Estado') === 'undefined') {
+        //    this.model.EstadoId = 131;
+        // }
+        // else {
+        //     this.model.EstadoId = parseInt(localStorage.getItem('Estado'), 10);
+        // }
+        // if (localStorage.getItem('AlmacenId') == null || localStorage.getItem('AlmacenId') === 'undefined') {
+        //   this.model.AlmacenId = 1;
+        // }
+        // else {
+        //     this.model.AlmacenId = parseInt(localStorage.getItem('AlmacenId'), 10);
+        // }
 
 
       });

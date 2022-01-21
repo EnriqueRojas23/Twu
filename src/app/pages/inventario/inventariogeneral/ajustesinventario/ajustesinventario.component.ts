@@ -17,6 +17,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { AppDateAdapter, APP_DATE_FORMATS } from 'src/app/_common/datepicker.extend';
 import { ToastrService } from 'ngx-toastr';
+import { SelectItem } from 'primeng';
 
 declare var $: any;
 
@@ -50,15 +51,17 @@ export class AjustesinventarioComponent implements OnInit {
   displayedColumns2: string[] = [ 'ubicacion', 'almacen' , 'area', 'sugerido' , 'estado' , 'actionsColumn' ];
 
 
-  clientes: Dropdownlist[] = [];
-  productos: Dropdownlist[] = [];
+  clientes: SelectItem[] = [];
+  productos: SelectItem[] = [];
   estadoInventario: Dropdownlist[] = [];
   ubicaciones: Ubicacion[];
 
   selection = new SelectionModel<InventarioGeneral>(true, []);
 
-  listData: MatTableDataSource<InventarioGeneral>;
+  listData: InventarioGeneral[];
   listUbicaciones: MatTableDataSource<Ubicacion>;
+
+  cols: any[];
 
   modeldetail: any = {};
   titularAlerta = '';
@@ -100,6 +103,21 @@ export class AjustesinventarioComponent implements OnInit {
               private alertify: ToastrService) { }
 
   ngOnInit() {
+
+    this.cols =
+    [
+        {header: 'ACCIONES', field: 'numOrden' , width: '100px' },
+        {header: 'LPN', field: 'numOrden'  ,  width: '80px' },
+        {header: 'PRODUCTO', field: 'almacen'  ,  width: '120px' },
+        {header: 'AREA', field: 'propietario'  , width: '140px'   },
+        {header: 'UBICACIÓN', field: 'nombreEstado'  ,  width: '100px'  },
+        {header: 'UNTQTY', field: 'guiaRemision' , width: '100px'  },
+        {header: 'HUELLA', field: 'equipotransporte'  , width: '140px'  },
+
+
+      ];
+
+
     this.generalService.getAreas().subscribe(resp =>
       {
 
@@ -124,61 +142,30 @@ export class AjustesinventarioComponent implements OnInit {
       });
 
     this.clienteService.getAllPropietarios('').subscribe(resp => {
+
+      console.log(resp);
+
       resp.forEach(element => {
-        this.clientes.push({ val: element.id , viewValue: element.razonSocial});
+        this.clientes.push({ label: element.razonSocial.toUpperCase() , value: element.id });
       });
-      this.filteredClientes.next(this.clientes.slice());
-      this.ClientesFilterCtrl.valueChanges
-      .pipe(takeUntil(this._onDestroy))
-      .subscribe(() => {
-            this.filterBanks();
-          });
 
+  });
+}
 
-    });
-  }
-  protected filterBanks() {
-    if (!this.clientes) {
-      return;
-    }
-    let search = this.ClientesFilterCtrl.value;
-    if (!search) {
-      this.filteredClientes.next(this.clientes.slice());
-      return;
-    } else {
-      search = search.toLowerCase();
-    }
-    this.filteredClientes.next(
-      this.clientes.filter(bank => bank.viewValue.toLowerCase().indexOf(search) > -1)
-    );
-
-  }
   buscar(){
 
-    this.inventarioService.getAllInventarioAjuste(this.model.ClienteId
+    this.inventarioService.getAllInventarioAjuste(this.model.PropietarioId
       , this.model.ProductoId
-      , this.model.estadoIdfiltro
+      , 10
       ).subscribe(list => {
 
-    this.inventario = list;
+        console.log(list);
+
+
     this.loading = false;
-    this.listData = new MatTableDataSource(this.inventario);
-    this.listData.paginator = this.paginator;
-    this.listData.sort = this.sort;
+    this.listData = list;
+      });
 
-
-    this.listData.filterPredicate = (data, filter) => {
-      return this.displayedColumns.some(ele => {
-
-        if (ele !== 'ubicacion'  && ele !== 'select' && ele !== 'Almacen' && ele !== 'Urgente' && ele !== 'fechaEsperada' && ele !== 'fechaRegistro')
-           {
-
-              return ele !== 'actionsColumn' && data[ele].toLowerCase().indexOf(filter) !== -1;
-
-           }
-        });
-       };
-    });
    }
   checkSelects() {
     return  this.selection.selected.length > 0 ?  false : true;
@@ -198,45 +185,21 @@ export class AjustesinventarioComponent implements OnInit {
     this.selection.isSelected(row) ? this.selection.deselect(row) : this.selection.select(row);
   }
   CambioCliente(id){
-     this.productoService.getAll('', id).subscribe(resp => {
+
+    console.log(id.value);
+     this.productoService.getAll('', id.value).subscribe(resp => {
 
 
       resp.forEach(element => {
-        this.productos.push({ val: element.id , viewValue: element.descripcionLarga});
+        this.productos.push({ label:element.descripcionLarga, value:  element.id });
       });
-
-      this.filteredProductos.next(this.productos.slice());
-      this.ProductosFilterCtrl.valueChanges
-      .pipe(takeUntil(this._onDestroy))
-      .subscribe(() => {
-            this.filterProductos();
-          });
-
 
 
 
      });
   }
-  protected filterProductos() {
-    if (!this.productos) {
-      return;
-    }
-    let search = this.ProductosFilterCtrl.value;
-    if (!search) {
-      this.filteredProductos.next(this.productos.slice());
-      return;
-    } else {
-      search = search.toLowerCase();
-    }
-    this.filteredProductos.next(
-      this.productos.filter(bank => bank.viewValue.toLowerCase().indexOf(search) > -1)
-    );
-  }
-  masterToggle() {
-    this.isAllSelected() ?
-        this.selection.clear() :
-        this.listData.data.forEach(row => this.selection.select(row));
-  }
+
+
   edit(id){
     this.router.navigate(['/inventario/nuevoajuste', id]);
   }
@@ -296,7 +259,5 @@ export class AjustesinventarioComponent implements OnInit {
 
 
 }
-applyFilter() {
-  this.listData.filter = this.searchKey.trim().toLowerCase();
-  }
+
 }

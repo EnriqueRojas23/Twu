@@ -1,4 +1,4 @@
-<!-- 
+<!--
     <div class="light-font">
         <nav aria-label="breadcrumb" role="navigation">
           <ol class="breadcrumb primary-color">
@@ -17,8 +17,8 @@
         <li class="breadcrumb-item"> Recibo</li>
         <li class="breadcrumb-item"  [routerLink]="['/recibo/listaordenrecibo']" routerLinkActive="router-link-active">Órdenes de Recibo </li>
         <li class="breadcrumb-item active">Ver Orden de Recibo</li>
-        
-        
+
+
       </ol>
      </ol>
    </nav>
@@ -30,13 +30,13 @@
       <div class="card-header"> Detalles de la Orden<span class="card-subtitle"> Datos de detalle de la orden de recibo</span></div>
       <div class="row">
           <div class="offset-md-1 col-md-8">
-           
+
           </div>
       </div>
       <div class="row">
           <div class="col-md-4"></div>
           <div class="offset-md-8 col-md-3">
-              <button class="btn btn-block btn-button btn-primary"   (click)="regresar()"  type="button">  Regresar </button>  
+              <button class="btn btn-block btn-button btn-primary"   (click)="regresar()"  type="button">  Regresar </button>
           </div>
         </div>
       <div class="card-body ">
@@ -44,8 +44,8 @@
 
 
               <mat-table #table [dataSource] = "listData" matSort >
-                
-                  
+
+
                   <ng-container matColumnDef="Linea">
                       <mat-header-cell *matHeaderCellDef mat-sort-header > Línea  </mat-header-cell>
                       <mat-cell *matCellDef="let orden"> {{orden.linea}} </mat-cell>
@@ -78,15 +78,15 @@
                                 <!-- routerLink="/nuevaordenrecibodetalle" -->
                             <!-- <button mat-fab color="primary" (click)="nuevodetalle()"  > <i aria-hidden="true" class="fa fa-plus fa-1x"></i></button> -->
                             </div>
-                            <button class="btn btn-space btn-primary" (click)="nuevodetalle()">Nueva Línea</button>
+                            <button class="btn btn-space btn-primary" *ngIf="model.estadoID <= 6" (click)="nuevodetalle()">Nueva Línea</button>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <button [swal]='deleteSwal' class="btn  btn-outline-primary" (confirm)="delete(row.id)" type="button"><i class="fa fa-trash"></i></button>
+                            <button [swal]='deleteSwal' class="btn  btn-outline-primary" *ngIf="model.estadoID <= 6"  (confirm)="delete(row.id)" type="button"><i class="fa fa-trash"></i></button>
                         </mat-cell>
                     </ng-container>
 
                     <mat-header-row *matHeaderRowDef="displayedColumns" ></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;" 
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"
                          >
                     </mat-row>
 
@@ -97,12 +97,12 @@
             <!-- <div class="row pt-2 pt-sm-5 mt-1">
                 <div class="col-sm-6 pl-0">
                   <p class="text-right">
-                    
+
                     <button routerLink="/listaordenrecibo" class="btn btn-space btn-secondary">Regresar</button>
                   </p>
                 </div>
               </div> -->
-        
+
 </div>
 </div>
 
@@ -114,6 +114,6 @@
   text="¿Esta seguro que desea eliminar la línea?"
   type="question"
 
- 
+
   >
 </swal>

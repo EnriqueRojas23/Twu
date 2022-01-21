@@ -49,7 +49,7 @@ marcaVehiculo: SelectItem[] = [];
               private data: Data ) { }
 
   ngOnInit() {
-    this.model.PropietarioId =  (this.data.storage[0].propietarioID);
+    this.model.PropietarioId =  (this.data.storage.propietarioID);
 
     this.general.getValorTabla(4).subscribe(resp =>
       {
@@ -112,21 +112,22 @@ marcaVehiculo: SelectItem[] = [];
     }, error => {
        this.alertify.error(error);
     }, () => {
-      this.data.storage.forEach(element => {
-        this.model.OrdenReciboId = element.ordenReciboId;
+
+        this.model.OrdenReciboId = this.data.storage.ordenReciboId;
         this.model.Id = this.transporte.id;
         this.equipoTransporteService.matchEquipoTransporte(this.model).subscribe(resp1 => {
-       }, error => {
-          this.alertify.error(error);
-       }, () => {
-         this.alertify.success('Se vinculó al equipo correctamente.');
-       });
-      });
+          }, error => {
+              this.alertify.error(error);
+          }, () => {
+            this.alertify.success('Se vinculó al equipo correctamente.');
+            new Promise( resolve =>
+              setTimeout(resolve, 300));
+            this.alertify.success('Se creo el equipo de transporte correctamente.');
+            this.router.navigate(['/recibo/listaordenrecibo']);
+          });
+
       // tslint:disable-next-line: no-unused-expression
-      new Promise( resolve =>
-        setTimeout(resolve, 300));
-      this.alertify.success('Se creo el equipo de transporte correctamente.');
-      this.router.navigate(['/recibo/listaordenrecibo']);
+
     });
 
 
